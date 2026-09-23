@@ -1,0 +1,22 @@
+{
+  "name": "car-radar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mobile-first car news radar for BMW, Audi, Mercedes-Benz, Porsche, Zeekr, Polestar and Volvo Cars, with OFFICIAL / CONFIRMED / RUMOR labels.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env server/index.js",
+    "dev": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env --watch server/index.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
+    "compression": "^1.8.2",
+    "entities": "^7.0.1",
+    "express": "^5.2.1",
+    "rss-parser": "^3.13.0"
+  }
+}

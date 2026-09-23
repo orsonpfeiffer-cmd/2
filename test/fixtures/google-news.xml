@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>"Zeekr" - Google News</title>
+    <item>
+      <title>Zeekr 7X launches in Europe with 800V charging - CarNewsChina</title>
+      <link>https://news.google.com/rss/articles/CBMiZEFVX3lxTE1aZWVrcjdY?oc=5</link>
+      <guid isPermaLink="false">CBMiZEFVX3lxTE1aZWVrcjdY</guid>
+      <pubDate>{{rfc:50m}}</pubDate>
+      <description>&lt;a href="https://news.google.com/rss/articles/CBMiZEFVX3lxTE1aZWVrcjdY?oc=5" target="_blank"&gt;Zeekr 7X launches in Europe with 800V charging&lt;/a&gt;&amp;nbsp;&amp;nbsp;&lt;font color="#6f6f6f"&gt;CarNewsChina&lt;/font&gt;</description>
+      <source url="https://carnewschina.com">CarNewsChina</source>
+    </item>
+    <item>
+      <title>Zeekr 9X patent reveals a pop-up roof tent - Carscoops</title>
+      <link>https://news.google.com/rss/articles/CBMiZEFVX3lxTE1aZWVrcjlY?oc=5</link>
+      <pubDate>{{rfc:2h}}</pubDate>
+      <description>&lt;a href="x"&gt;Zeekr 9X patent&lt;/a&gt;</description>
+      <source url="https://www.carscoops.com">Carscoops</source>
+    </item>
+    <item>
+      <title>Polestar 7 revealed with 600-mile range and 800V charging - Electrek</title>
+      <link>https://news.google.com/rss/articles/CBMiZEFVX3lxTFBvbGVzdGFyNw?oc=5</link>
+      <pubDate>{{rfc:20m}}</pubDate>
+      <description>&lt;a href="x"&gt;Polestar 7&lt;/a&gt;</description>
+      <source url="https://electrek.co">Electrek</source>
+    </item>
+    <item>
+      <title>Zeekr announces Q3 deliveries - Zeekr Newsroom</title>
+      <link>https://news.google.com/rss/articles/CBMiZEFVX3lxTFplZWtyUTM?oc=5</link>
+      <pubDate>{{rfc:30m}}</pubDate>
+      <description>&lt;a href="x"&gt;Zeekr Q3&lt;/a&gt;</description>
+      <source url="https://www.zeekrgroup.com">Zeekr Newsroom</source>
+    </item>
+    <item>
+      <title>Polestar Pilates opens a new studio in Austin - Austin Daily</title>
+      <link>https://news.google.com/rss/articles/CBMiUGlsYXRlcw?oc=5</link>
+      <pubDate>{{rfc:1h}}</pubDate>
+      <description>&lt;a href="x"&gt;Pilates&lt;/a&gt;</description>
+      <source url="https://austindaily.example">Austin Daily</source>
+    </item>
+    <item>
+      <title>Why Zeekr stock is soaring today - MarketBeat</title>
+      <link>https://news.google.com/rss/articles/CBMiTWFya2V0QmVhdA?oc=5</link>
+      <pubDate>{{rfc:1h}}</pubDate>
+      <description>&lt;a href="x"&gt;MarketBeat&lt;/a&gt;</description>
+      <source url="https://www.marketbeat.com">MarketBeat</source>
+    </item>
+  </channel>
+</rss>

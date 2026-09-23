@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Car Radar</title>
+  <meta name="description" content="Latest news for BMW, Audi, Mercedes-Benz, Porsche, Zeekr, Polestar and Volvo Cars, labeled Official, Confirmed or Rumor.">
+  <meta name="theme-color" content="#0A0B0E">
+  <meta name="color-scheme" content="dark light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Car Radar">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/app.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header class="topbar" id="topbar">
+    <div class="wrap">
+      <div class="bar-row">
+        <a href="#/" class="logo" id="logo" aria-label="Car Radar">
+          <svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+          <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="2"/>
+            <circle cx="16" cy="16" r="7.5" fill="none" stroke="currentColor" stroke-opacity=".55" stroke-width="2"/>
+            <path class="sweep" d="M16 16 L16 3 A13 13 0 0 1 28.4 12.2 Z" fill="currentColor" fill-opacity=".28"/>
+            <circle cx="16" cy="16" r="2.6" fill="currentColor"/>
+            <circle class="blip" cx="22.5" cy="8.6" r="2" fill="#22C55E"/>
+          </svg>
+          <span class="logo-text">Car Radar</span>
+        </a>
+        <span class="page-title" id="pageTitle" hidden>Sources</span>
+
+        <form class="search" id="searchForm" role="search" hidden>
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="searchInput" type="search" placeholder="Search headlines" autocomplete="off" enterkeyhint="search" aria-label="Search headlines">
+        </form>
+
+        <div class="actions">
+          <button class="icon-btn" id="searchBtn" type="button" aria-label="Search" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          </button>
+          <a class="icon-btn" id="sourcesBtn" href="#/sources" aria-label="Sources">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11a8 8 0 0 1 8 8"/><path d="M5 5a14 14 0 0 1 14 14"/><circle cx="6" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch to light mode">
+            <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="filters" id="filters">
+        <div class="chips" id="brandChips" role="group" aria-label="Brands"></div>
+        <div class="filter-row">
+          <div class="segmented" id="labelFilter" role="radiogroup" aria-label="Label">
+            <button type="button" role="radio" data-label="ALL">All</button>
+            <button type="button" role="radio" data-label="OFFICIAL">Official</button>
+            <button type="button" role="radio" data-label="CONFIRMED">Confirmed</button>
+            <button type="button" role="radio" data-label="RUMOR">Rumor</button>
+          </div>
+          <label class="range">
+            <svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <span id="rangeLabel">7d</span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            <select id="rangeSelect" aria-label="Time range">
+              <option value="today">Today</option>
+              <option value="3d">Last 3 days</option>
+              <option value="7d">Last 7 days</option>
+              <option value="14d">Last 14 days</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="ptr" id="ptr" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4.5h-4.5"/></svg>
+  </div>
+
+  <button class="new-banner" id="newBanner" type="button" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <span id="newBannerText">New articles</span>
+  </button>
+
+  <main class="wrap" id="main">
+    <section id="feedView">
+      <div class="feed" id="feed"></div>
+      <div class="feed-status" id="feedStatus" aria-live="polite"></div>
+      <div id="sentinel" aria-hidden="true"></div>
+    </section>
+
+    <section id="sourcesView" hidden>
+      <div id="sourcesBody" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>

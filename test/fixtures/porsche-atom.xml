@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+  <title>Porsche Newsroom</title>
+  <id>urn:porsche-newsroom</id>
+  <updated>{{iso:1h}}</updated>
+  <entry>
+    <title type="html">The new 911 Turbo S: 711 PS &amp;amp; a T-Hybrid</title>
+    <link rel="alternate" href="https://newsroom.porsche.com/en/2026/products/911-turbo-s.html"/>
+    <id>urn:porsche:911-turbo-s</id>
+    <published>{{iso:1h}}</published>
+    <summary type="html">&lt;p&gt;Porsche presents the most powerful 911 Turbo S ever.&lt;/p&gt;</summary>
+    <media:thumbnail url="{{BASE}}/img/porsche.svg" width="1200"/>
+  </entry>
+  <entry>
+    <title>Taycan wins Golden Steering Wheel&amp;nbsp;award</title>
+    <link rel="alternate" href="https://newsroom.porsche.com/en/2026/company/taycan-award.html"/>
+    <id>urn:porsche:taycan-award</id>
+    <updated>{{iso:7h}}</updated>
+    <content type="html">&lt;p&gt;Readers voted the Taycan the best electric car of the year&amp;nbsp;&amp;mdash; again.&lt;/p&gt;</content>
+  </entry>
+</feed>

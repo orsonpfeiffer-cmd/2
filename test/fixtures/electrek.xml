@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:media="http://search.yahoo.com/mrss/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Electrek</title>
+    <link>https://electrek.co</link>
+    <item>
+      <title>Polestar 7 revealed with 600-mile range and 800V charging</title>
+      <link>https://electrek.co/2026/09/23/polestar-7-revealed/?utm_source=rss</link>
+      <pubDate>{{rfc:25m}}</pubDate>
+      <description><![CDATA[<p>Polestar has finally shown the Polestar 7, a large electric SUV with a claimed 600-mile range.</p><p>The post <a href="https://electrek.co/x">Polestar 7 revealed</a> appeared first on <a href="https://electrek.co">Electrek</a>.</p>]]></description>
+      <content:encoded><![CDATA[<p><img src="https://electrek.co/wp-content/uploads/polestar7.jpg?w=150" /></p><p>Full text.</p>]]></content:encoded>
+      <media:content url="{{BASE}}/img/polestar.svg" medium="image" width="1600"/>
+      <media:content url="https://electrek.co/small.jpg" medium="image" width="150"/>
+    </item>
+    <item>
+      <title>Tesla Model Y gets a new long-range trim</title>
+      <link>https://electrek.co/2026/09/23/tesla-model-y-trim/</link>
+      <pubDate>{{rfc:1h}}</pubDate>
+      <description>Tesla quietly added a new trim. The Polestar 4 remains a rival.</description>
+    </item>
+    <item>
+      <title>Spy shots: next BMW iX5 caught testing in the snow</title>
+      <link>https://electrek.co/2026/09/22/bmw-ix5-spy-shots/</link>
+      <pubDate>{{rfc:3h}}</pubDate>
+      <description>Our photographers spotted a camouflaged BMW iX5 prototype near the Arctic Circle &amp;#8212; here&#8217;s what we see.</description>
+    </item>
+    <item>
+      <title>Volvo Trucks unveils new electric FH Aero</title>
+      <link>https://electrek.co/2026/09/22/volvo-trucks-fh-aero/</link>
+      <pubDate>{{rfc:4h}}</pubDate>
+      <description>Volvo Trucks has a new electric long-hauler.</description>
+    </item>
+  </channel>
+</rss>

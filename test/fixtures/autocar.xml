@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>Autocar</title>
+    <item>
+      <title>New Polestar 7 SUV debuts with 600 miles of range</title>
+      <link>https://www.autocar.co.uk/car-news/new-cars/new-polestar-7-suv-debuts</link>
+      <pubDate>{{rfc:15m}}</pubDate>
+      <description>Swedish brand's flagship SUV arrives in 2027 with dual-motor power.</description>
+      <media:thumbnail url="{{BASE}}/img/autocar-polestar.svg"/>
+    </item>
+    <item>
+      <title>Porsche SE shares fall after VW writedown</title>
+      <link>https://www.autocar.co.uk/car-news/business/porsche-se-shares</link>
+      <pubDate>{{rfc:2h}}</pubDate>
+      <description>The holding company Porsche SE booked a big loss.</description>
+    </item>
+    <item>
+      <title>Audi could revive the R8 as an EV, insiders say</title>
+      <link>https://www.autocar.co.uk/car-news/new-cars/audi-r8-ev</link>
+      <pubDate>{{rfc:6h}}</pubDate>
+      <description>A new electric supercar is being considered.</description>
+    </item>
+    <item>
+      <title>Mercedes-AMG GT 63 review: brutal and brilliant</title>
+      <link>https://www.autocar.co.uk/car-review/mercedes-amg/gt-63</link>
+      <pubDate>{{rfc:8h}}</pubDate>
+      <description>We drive the latest AMG GT on UK roads.</description>
+    </item>
+    <item>
+      <title>Russell takes pole for Mercedes at the Singapore Grand Prix</title>
+      <link>https://www.autocar.co.uk/motorsport/f1-singapore</link>
+      <pubDate>{{rfc:9h}}</pubDate>
+      <description>Mercedes locked out the front row.</description>
+    </item>
+  </channel>
+</rss>

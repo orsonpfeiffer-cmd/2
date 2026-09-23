@@ -1,0 +1,16 @@
+{
+  "name": "Car Radar",
+  "short_name": "Car Radar",
+  "description": "Latest news for BMW, Audi, Mercedes-Benz, Porsche, Zeekr, Polestar and Volvo Cars, labeled Official, Confirmed or Rumor.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0A0B0E",
+  "theme_color": "#0A0B0E",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
