@@ -8,6 +8,6 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY sources.config.js ./
 COPY server ./server
 COPY public ./public
-VOLUME /data
 EXPOSE 3000
+# Persistent storage: mount a volume at /data (Railway Volume, or docker run -v name:/data).
 CMD ["node", "--disable-warning=ExperimentalWarning", "server/index.js"]
