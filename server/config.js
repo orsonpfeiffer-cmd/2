@@ -52,7 +52,7 @@ export function normalizeConfig(mod) {
       userAgent: 'Mozilla/5.0 (compatible; CarRadar/1.0; RSS reader)',
       dedupeWindowHours: 72,
       ...settings,
-      ai: { model: 'claude-opus-5', effort: 'low', batchSize: 15, concurrency: 3, maxPerCycle: 150, ...(settings.ai || {}) },
+      ai: { model: 'claude-opus-5', effort: 'low', batchSize: 15, concurrency: 3, maxPerCycle: 150, overviewsPerDay: 100, ...(settings.ai || {}) },
     },
   };
 }

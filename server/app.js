@@ -6,7 +6,7 @@ import { LABELS } from './classifier.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
-export function createApp({ db, config, ai, scheduler }) {
+export function createApp({ db, config, ai, overviewer = null, scheduler }) {
   const app = express();
   app.disable('x-powered-by');
   app.use(compression());
@@ -103,6 +103,7 @@ export function createApp({ db, config, ai, scheduler }) {
       clientPollSeconds: Number(process.env.CLIENT_POLL_SECONDS) || config.settings.clientPollSeconds,
       retentionDays: config.settings.retentionDays,
       ai: ai ? { enabled: true, model: ai.model } : { enabled: false },
+      overviews: !!overviewer,
     });
   });
 
@@ -123,6 +124,24 @@ export function createApp({ db, config, ai, scheduler }) {
     const filters = parseFilters(req.query);
     const since = Number(req.query.since) || 0;
     res.json({ count: since > 0 ? db.countNewer(filters, since) : 0, serverTime: Date.now() });
+  });
+
+  // One story, for opening a shared link to the reader.
+  api.get('/articles/:id', (req, res) => {
+    const row = db.getArticle(String(req.params.id));
+    if (!row || row.hidden) return res.status(404).json({ error: 'Not found' });
+    res.json(toStories([row])[0]);
+  });
+
+  // AI overview, made on first request and stored. Can take a while when Claude reads the web.
+  api.get('/articles/:id/overview', async (req, res, next) => {
+    try {
+      if (!overviewer) return res.json({ status: 'unavailable', reason: 'no_key' });
+      const result = await overviewer.get(String(req.params.id));
+      res.status(result.status === 'not_found' ? 404 : 200).json(result);
+    } catch (err) {
+      next(err);
+    }
   });
 
   api.get('/sources', (req, res) => {

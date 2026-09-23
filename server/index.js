@@ -4,6 +4,7 @@ import { createAiClassifier } from './classifier.js';
 import { createPipeline } from './pipeline.js';
 import { createApp } from './app.js';
 import { createScheduler } from './scheduler.js';
+import { createOverviewer } from './overview.js';
 
 async function main() {
   const config = await loadConfig();
@@ -12,7 +13,8 @@ async function main() {
   const pipeline = createPipeline({ db, config, ai });
   const minutes = Number(process.env.FETCH_INTERVAL_MINUTES) || config.settings.fetchIntervalMinutes;
   const scheduler = createScheduler(pipeline, minutes);
-  const app = createApp({ db, config, ai, scheduler });
+  const overviewer = createOverviewer(config, db);
+  const app = createApp({ db, config, ai, overviewer, scheduler });
 
   const port = Number(process.env.PORT) || 3000;
   const server = app.listen(port, () => {

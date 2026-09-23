@@ -49,7 +49,15 @@ export function openDb(file = process.env.DB_PATH || path.join(process.env.DATA_
   const db = new DatabaseSync(file);
   db.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA busy_timeout = 5000;');
   db.exec(SCHEMA);
+  migrate(db);
   return wrap(db);
+}
+
+// Adds columns introduced after the first release, so existing databases keep working.
+function migrate(db) {
+  const cols = new Set(db.prepare('PRAGMA table_info(articles)').all().map((c) => c.name));
+  if (!cols.has('content')) db.exec("ALTER TABLE articles ADD COLUMN content TEXT NOT NULL DEFAULT ''");
+  if (!cols.has('overview')) db.exec('ALTER TABLE articles ADD COLUMN overview TEXT'); // JSON, written once
 }
 
 function buildWhere({ brands, label, from, q: search }) {
@@ -82,8 +90,10 @@ function wrap(db) {
     exists: db.prepare('SELECT 1 FROM articles WHERE id = ?'),
     insert: db.prepare(`INSERT OR IGNORE INTO articles
       (id, url, title, summary, image, source_id, publisher, source_type, via, published_at, inserted_at,
-       brands, label, label_reason, label_by, hidden, hidden_reason, cluster_id, is_primary, title_key)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+       brands, label, label_reason, label_by, hidden, hidden_reason, cluster_id, is_primary, title_key, content)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+    getArticle: db.prepare('SELECT * FROM articles WHERE id = ?'),
+    setOverview: db.prepare('UPDATE articles SET overview = ? WHERE id = ?'),
     recent: db.prepare(`SELECT id, cluster_id, title_key, brands, published_at FROM articles
       WHERE hidden = 0 AND published_at >= ?`),
     clusterMembers: db.prepare(`SELECT id, source_type, image, published_at FROM articles
@@ -116,8 +126,10 @@ function wrap(db) {
     insert(a) {
       q.insert.run(a.id, a.url, a.title, a.summary, a.image, a.source_id, a.publisher, a.source_type, a.via,
         a.published_at, a.inserted_at, JSON.stringify(a.brands), a.label, a.label_reason, a.label_by,
-        a.hidden ? 1 : 0, a.hidden_reason || null, a.cluster_id, a.is_primary ? 1 : 0, a.title_key || '');
+        a.hidden ? 1 : 0, a.hidden_reason || null, a.cluster_id, a.is_primary ? 1 : 0, a.title_key || '', a.content || '');
     },
+    getArticle: (id) => q.getArticle.get(id),
+    setOverview: (id, overview) => q.setOverview.run(JSON.stringify(overview), id),
     recentForDedupe: (since) => q.recent.all(since).map((r) => ({ ...r, brands: JSON.parse(r.brands) })),
     clusterMembers: (clusterId) => q.clusterMembers.all(clusterId),
     setPrimary: (id, clusterId) => q.setPrimary.run(id, clusterId),

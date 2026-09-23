@@ -87,6 +87,12 @@ const BOILERPLATE = [
   /\s*\[(…|\.\.\.|&#8230;)\]\s*$/,
 ];
 
+function cleanText(html) {
+  let text = htmlToText(html);
+  for (const re of BOILERPLATE) text = text.replace(re, '').trim();
+  return text;
+}
+
 export function normalizeItem(raw, source, feedUrl) {
   const gn = Array.isArray(raw.gnSource) ? raw.gnSource[0] : raw.gnSource;
   const gnName = typeof gn === 'string' ? gn : gn?._;
@@ -100,11 +106,14 @@ export function normalizeItem(raw, source, feedUrl) {
   if (gnName && title.endsWith(` - ${gnName}`)) title = title.slice(0, -(gnName.length + 3)).trim();
 
   let summary = '';
+  let content = '';
   if (!isGoogleNews) {
     // Google News descriptions are just the headline plus links, so skip them.
-    summary = htmlToText(raw.summary || raw.content || raw.contentEncoded || '');
-    for (const re of BOILERPLATE) summary = summary.replace(re, '').trim();
+    summary = cleanText(raw.summary || raw.content || raw.contentEncoded || '');
     if (summary.toLowerCase().startsWith(title.toLowerCase()) && summary.length < title.length + 40) summary = '';
+    // Many feeds (WordPress, Atom) include the whole article. Keep it for the AI overview.
+    const full = cleanText(raw.contentEncoded || raw.content || '');
+    if (full.length > summary.length + 200) content = truncate(full, 8000);
     summary = truncate(summary, 400);
   }
 
@@ -113,6 +122,7 @@ export function normalizeItem(raw, source, feedUrl) {
     title: truncate(title, 300),
     url: link,
     summary,
+    content,
     image: pickImage(raw, link),
     publisher,
     publisherHost: hostOf(gnUrl || (isGoogleNews ? '' : link)),

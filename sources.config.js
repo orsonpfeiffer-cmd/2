@@ -214,5 +214,6 @@ export const settings = {
     batchSize: 15,          // articles per API call
     concurrency: 3,
     maxPerCycle: 150,       // cap per refresh; extras get keyword labels (protects your bill on first run)
+    overviewsPerDay: 100,   // cap on new AI overviews per day (each article's overview is made once and stored)
   },
 };

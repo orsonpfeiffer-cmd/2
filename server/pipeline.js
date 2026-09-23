@@ -155,6 +155,7 @@ export function createPipeline({ db, config, ai = null, fetchImpl, now = () => D
       url: article.url,
       title: article.title,
       summary: article.summary || '',
+      content: article.content || '',
       image: article.image,
       source_id: source.id,
       publisher: article.publisher,

@@ -10,6 +10,7 @@ const el = {
   sourcesView: $('sourcesView'), sourcesBody: $('sourcesBody'),
   rangeLabel: $('rangeLabel'),
   newBanner: $('newBanner'), newBannerText: $('newBannerText'), ptr: $('ptr'), toast: $('toast'),
+  sheet: $('sheet'), sheetBody: $('sheetBody'), sheetBackdrop: $('sheetBackdrop'), sheetClose: $('sheetClose'), sheetBar: $('sheetBar'),
 };
 
 // ─── Storage (always wrapped: private mode can throw) ───────────────────────
@@ -261,26 +262,38 @@ function thumb(item) {
   return `<div class="thumb ${cls}"><span>${esc(first?.name || '')}</span>${img}</div>`;
 }
 
-function cardHtml(item, index) {
+function badgeHtml(item) {
   const label = LABEL_NAME[item.label] ? item.label : 'CONFIRMED';
-  const lc = label.toLowerCase();
+  return `<span class="badge ${label.toLowerCase()}">${ICON[label]}${LABEL_NAME[label]}</span>`;
+}
+
+function relatedItemsHtml(related) {
+  return related
+    .map(
+      (r) => `<li><a href="${safeHref(r.url)}" target="_blank" rel="noopener noreferrer">
+        <span class="r-top"><b>${esc(r.publisher)}</b><span data-ts="${r.publishedAt}">${timeAgo(r.publishedAt)}</span>
+        <span class="mini-label ${esc((r.label || '').toLowerCase())}">${esc(LABEL_NAME[r.label] || '')}</span></span>
+        <span class="r-title">${esc(r.title)}</span></a></li>`,
+    )
+    .join('');
+}
+
+function metaHtml(item) {
   const via = item.via ? `<span class="via">via ${esc(item.via)}</span>` : '';
+  return `${item.brands.map(brandTag).join('')}
+    <span class="src"><b>${esc(item.publisher)}</b>· <span data-ts="${item.publishedAt}">${timeAgo(item.publishedAt)}</span>${via}</span>`;
+}
+
+function cardHtml(item, index) {
   const related = item.related?.length
     ? `<div class="related">
         <button type="button" class="related-toggle" aria-expanded="false">Also reported by ${item.related.length} ${item.related.length === 1 ? 'source' : 'sources'}${ICON.chevron}</button>
-        <ul class="related-list" hidden>${item.related
-          .map(
-            (r) => `<li><a href="${safeHref(r.url)}" target="_blank" rel="noopener noreferrer">
-              <span class="r-top"><b>${esc(r.publisher)}</b><span data-ts="${r.publishedAt}">${timeAgo(r.publishedAt)}</span>
-              <span class="mini-label ${esc((r.label || '').toLowerCase())}">${esc(LABEL_NAME[r.label] || '')}</span></span>
-              <span class="r-title">${esc(r.title)}</span></a></li>`,
-          )
-          .join('')}</ul>
+        <ul class="related-list" hidden>${relatedItemsHtml(item.related)}</ul>
       </div>`
     : '';
   return `<article class="card" data-id="${esc(item.id)}" style="--i:${index}">
     <div class="card-top">
-      <span class="badge ${lc}">${ICON[label]}${LABEL_NAME[label]}</span>
+      ${badgeHtml(item)}
       ${isNew(item) ? '<span class="new-dot">NEW</span>' : ''}
     </div>
     <p class="reason">${esc(item.reason)}</p>
@@ -289,10 +302,7 @@ function cardHtml(item, index) {
       ${thumb(item)}
     </a>
     ${item.summary ? `<p class="summary">${esc(item.summary)}</p>` : ''}
-    <div class="meta">
-      ${item.brands.map(brandTag).join('')}
-      <span class="src"><b>${esc(item.publisher)}</b>· <span data-ts="${item.publishedAt}">${timeAgo(item.publishedAt)}</span>${via}</span>
-    </div>
+    <div class="meta">${metaHtml(item)}</div>
     ${related}
   </article>`;
 }
@@ -317,10 +327,19 @@ el.feed.addEventListener('error', (e) => e.target.tagName === 'IMG' && e.target.
 
 el.feed.addEventListener('click', (e) => {
   const toggle = e.target.closest('.related-toggle');
-  if (!toggle) return;
-  const open = toggle.getAttribute('aria-expanded') !== 'true';
-  toggle.setAttribute('aria-expanded', String(open));
-  toggle.nextElementSibling.hidden = !open;
+  if (toggle) {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.nextElementSibling.hidden = !open;
+    return;
+  }
+  // Tapping a card opens the in-app reader. Cmd/Ctrl/Shift-click still opens the original site.
+  const link = e.target.closest('.card-link');
+  if (link && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+    e.preventDefault();
+    openedFromFeed = true;
+    location.hash = `#/a/${link.closest('.card').dataset.id}`;
+  }
 });
 
 // A card counts as seen after it has been on screen for a second.
@@ -498,7 +517,7 @@ el.newBanner.addEventListener('click', async () => {
   };
 
   window.addEventListener('touchstart', (e) => {
-    if (busy || window.scrollY > 0 || e.touches.length !== 1) return;
+    if (busy || window.scrollY > 0 || e.touches.length !== 1 || document.body.classList.contains('sheet-open')) return;
     startY = e.touches[0].clientY;
     dist = 0;
   }, { passive: true });
@@ -589,9 +608,188 @@ function sourceHtml(s) {
   </div>`;
 }
 
+// ─── Reader sheet + AI overview ─────────────────────────────────────────────
+const SPARKLE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9zM19 14l.9 2.6 2.6.9-2.6.9L19 21l-.9-2.6-2.6-.9 2.6-.9z"/></svg>';
+const EXTERNAL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+const overviews = new Map(); // id → finished overview, so reopening is instant
+let sheetId = null;
+let sheetHideTimer = null;
+let returnFocus = null;
+
+async function openSheet(id) {
+  if (sheetId === id) return;
+  sheetId = id;
+  returnFocus = document.activeElement;
+  clearTimeout(sheetHideTimer);
+  document.body.classList.add('sheet-open');
+  el.sheet.hidden = false;
+  el.sheetBackdrop.hidden = false;
+  el.sheet.style.transform = '';
+  el.sheetBody.scrollTop = 0;
+  requestAnimationFrame(() => {
+    el.sheet.classList.add('open');
+    el.sheetBackdrop.classList.add('open');
+  });
+
+  let item = state.items.find((i) => i.id === id);
+  if (!item) {
+    el.sheetBody.innerHTML = '<div class="feed-status"><div class="spinner"></div></div>';
+    try {
+      item = await api(`/api/articles/${encodeURIComponent(id)}`);
+    } catch {
+      if (sheetId === id) el.sheetBody.innerHTML = '<div class="empty"><h2>Article not found</h2><p>It may be older than 14 days.</p></div>';
+      return;
+    }
+  }
+  if (sheetId !== id) return;
+  renderSheet(item);
+  markSeen(id);
+  el.sheetClose.focus({ preventScroll: true });
+  loadOverview(item);
+}
+
+let openedFromFeed = false;
+function closeSheet() {
+  if (!location.hash.startsWith('#/a/')) return hideSheet();
+  if (openedFromFeed) {
+    // Step back so the phone's back gesture and the close button agree.
+    history.back();
+  } else {
+    // Opened from a shared link: don't send the reader off the site.
+    history.replaceState(null, '', '#/');
+    route();
+  }
+}
+
+function hideSheet() {
+  if (!sheetId) return;
+  sheetId = null;
+  openedFromFeed = false;
+  el.sheet.classList.remove('open');
+  el.sheetBackdrop.classList.remove('open');
+  document.body.classList.remove('sheet-open');
+  sheetHideTimer = setTimeout(() => {
+    el.sheet.hidden = true;
+    el.sheetBackdrop.hidden = true;
+  }, 340);
+  if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
+}
+
+function renderSheet(item) {
+  const image = /^https?:\/\//i.test(item.image || '')
+    ? `<div class="sheet-image"><img src="${esc(item.image)}" alt="" referrerpolicy="no-referrer"></div>`
+    : '';
+  const related = item.related?.length
+    ? `<h3 class="sheet-section-title">Also reported by</h3><ul class="related-list">${relatedItemsHtml(item.related)}</ul>`
+    : '';
+  el.sheetBody.innerHTML = `<div class="sheet-inner">
+    <div class="sheet-head">
+      <div>${badgeHtml(item)}</div>
+      <p class="reason">${esc(item.reason)}</p>
+      <h2 class="sheet-title" id="sheetTitle">${esc(item.title)}</h2>
+      <div class="meta">${metaHtml(item)}</div>
+    </div>
+    <section class="ai-box" aria-live="polite">
+      <div class="ai-head">${SPARKLE}AI overview</div>
+      <div id="aiBody"></div>
+    </section>
+    ${image}
+    <a class="read-btn" href="${safeHref(item.url)}" target="_blank" rel="noopener noreferrer">Read the full article on ${esc(item.publisher)}${EXTERNAL}</a>
+    ${related}
+  </div>`;
+  el.sheetBody.querySelector('.sheet-image img')?.addEventListener('error', (e) => e.target.parentElement.remove());
+}
+
+function feedTextHtml(item) {
+  return item.summary ? `<p class="ai-feed">${esc(item.summary)}</p>` : '';
+}
+
+async function loadOverview(item, { retry = false } = {}) {
+  const body = () => (sheetId === item.id ? $('aiBody') : null);
+  if (!state.config.overviews) {
+    body().innerHTML = `<p class="ai-msg">AI overviews are off. Add ANTHROPIC_API_KEY in your server's settings to turn them on.</p>${feedTextHtml(item)}`;
+    return;
+  }
+  if (overviews.has(item.id) && !retry) return renderOverview(item, overviews.get(item.id));
+
+  body().innerHTML = `<div class="ai-lines">
+      <div class="sk sk-line" style="height:15px"></div><div class="sk sk-line" style="height:15px;width:80%"></div>
+      <div class="sk sk-line" style="width:92%"></div><div class="sk sk-line" style="width:70%"></div>
+    </div>
+    <div class="ai-wait"><div class="spinner"></div>Claude is reading the article…</div>`;
+
+  let result;
+  try {
+    const res = await fetch(`/api/articles/${encodeURIComponent(item.id)}/overview`, { signal: AbortSignal.timeout(150_000) });
+    result = await res.json();
+  } catch {
+    result = { status: 'unavailable', reason: 'error' };
+  }
+  if (result.status === 'ready') overviews.set(item.id, result);
+  if (body()) renderOverview(item, result);
+}
+
+const BASIS = {
+  feed: 'from the article text',
+  web: 'after reading the article online',
+  headline: "from the headline only, because the article couldn't be opened",
+};
+
+function renderOverview(item, r) {
+  const body = $('aiBody');
+  if (!body || sheetId !== item.id) return;
+  if (r.status === 'ready') {
+    body.innerHTML = `<p class="tldr">${esc(r.tldr)}</p>
+      ${r.points?.length ? `<ul class="points">${r.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
+      <p class="ai-foot">Written by Claude ${BASIS[r.basis] || ''}. It can make mistakes.</p>`;
+    return;
+  }
+  const msg = {
+    no_key: "AI overviews are off. Add ANTHROPIC_API_KEY in your server's settings to turn them on.",
+    limit: "Today's limit for new AI overviews is used up. It resets at midnight (UTC).",
+    not_found: 'This article is no longer available.',
+  }[r.reason || r.status] || "Couldn't make an overview right now.";
+  body.innerHTML = `<p class="ai-msg">${esc(msg)}</p>${feedTextHtml(item)}
+    ${r.reason === 'error' ? '<button type="button" class="ai-retry" id="aiRetry">Try again</button>' : ''}`;
+  $('aiRetry')?.addEventListener('click', () => loadOverview(item, { retry: true }));
+}
+
+el.sheetClose.addEventListener('click', closeSheet);
+el.sheetBackdrop.addEventListener('click', closeSheet);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && sheetId) closeSheet();
+});
+
+// Drag the top bar down to close.
+(function dragToClose() {
+  let startY = null;
+  let dy = 0;
+  el.sheetBar.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+    dy = 0;
+    el.sheet.classList.add('dragging');
+  }, { passive: true });
+  el.sheetBar.addEventListener('touchmove', (e) => {
+    if (startY == null) return;
+    dy = Math.max(0, e.touches[0].clientY - startY);
+    el.sheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+  el.sheetBar.addEventListener('touchend', () => {
+    startY = null;
+    el.sheet.classList.remove('dragging');
+    el.sheet.style.transform = '';
+    if (dy > 110) closeSheet();
+  });
+})();
+
 // ─── Routing ────────────────────────────────────────────────────────────────
 let sourcesTimer = null;
 function route() {
+  const article = /^#\/a\/([\w-]+)$/.exec(location.hash);
+  if (article) openSheet(article[1]);
+  else hideSheet();
+  if (article && state.route === 'feed' && !el.feedView.hidden) return;
+
   const sources = location.hash === '#/sources';
   state.route = sources ? 'sources' : 'feed';
   document.body.classList.toggle('view-sources', sources);

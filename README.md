@@ -46,6 +46,17 @@ Restart the server after editing. The in-app **Sources** page (the RSS icon) sho
 
 The model defaults to `claude-opus-5` at low effort, with Anthropic's server-side fallback turned on. Set `CLAUDE_MODEL=claude-haiku-4-5` to cut the cost about 5x. Each refresh sends at most 150 articles to Claude, so a fresh database can't run up a big bill on its first run.
 
+## Reader and AI overview
+
+Tapping a story opens it inside the app instead of sending you to another site. The reader shows the label, the other outlets covering the story, and a button to open the original article.
+
+With `ANTHROPIC_API_KEY` set, the reader also shows a short AI overview: one sentence plus a few key facts.
+
+- **Feed text first:** when the feed included the full article (most WordPress-based outlets do), Claude summarizes that text directly.
+- **Web when needed:** when a feed only gives a headline (every Google News story), Claude uses Anthropic's web search and fetch tools to read the article first.
+- **Made once:** each overview is created the first time anyone opens the article, then stored.
+- **Daily cap:** `overviewsPerDay` in the config (100 by default) limits how many new overviews get made per day. The site is public, so this caps what a stranger can cost you.
+
 ## Matching and duplicates
 
 - A brand counts when it's in the headline, or named at least twice in the summary. A single mention in the summary is treated as passing and ignored.
@@ -70,6 +81,8 @@ docker run -d -p 3000:3000 -v car-radar-data:/data -e ANTHROPIC_API_KEY=sk-ant-.
 |---|---|
 | `GET /api/articles?brands=bmw,audi&label=RUMOR&from=<ms>&q=text&cursor=…` | One page of stories, newest first |
 | `GET /api/articles/newer?since=<ms>&…` | How many stories are newer than the top of your feed, for the banner |
+| `GET /api/articles/:id` | One story, for opening a shared reader link |
+| `GET /api/articles/:id/overview` | The AI overview, made on first request |
 | `GET /api/sources` | Status of every source and the last refresh |
 | `GET /api/config` | Brands, colors, and whether AI labels are on |
 
@@ -79,7 +92,7 @@ docker run -d -p 3000:3000 -v car-radar-data:/data -e ANTHROPIC_API_KEY=sk-ant-.
 npm test
 ```
 
-The tests cover brand matching and false matches, rumor rules, the Claude response handling with a mocked client, feed parsing (RSS, Atom, Google News, broken XML), duplicate merging, retention, and a full refresh cycle against local fixture feeds that include failing sources.
+The tests cover brand matching and false matches, rumor rules, the Claude response handling with a mocked client, AI overviews (feed text and web paths, caching, the daily cap), feed parsing (RSS, Atom, Google News, broken XML), duplicate merging, retention, database upgrades, and a full refresh cycle against local fixture feeds that include failing sources.
 
 ## Layout
 
@@ -91,6 +104,7 @@ server/
   feeds.js            RSS/Atom download and parsing
   matcher.js          which brands an article is about
   classifier.js       Claude labels + keyword fallback
+  overview.js         AI overview for the reader
   dedupe.js           same-story detection
   db.js               SQLite (built into Node, no native modules)
   app.js              HTTP API + static files
