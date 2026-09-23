@@ -36,14 +36,7 @@ Everything lives in [`sources.config.js`](sources.config.js):
 
 Restart the server after editing. The in-app **Sources** page (the RSS icon) shows every source, when it last updated, and why it failed if it did.
 
-**Unverified feeds.** These URLs came from web search, because the build environment couldn't reach the sites. If one shows as failing on the Sources page, open the newsroom in a browser, find its RSS link, and paste it into the config.
-
-- BMW PressClub
-- Audi
-- Porsche Newsroom
-- Polestar Newsroom
-
-Mercedes-Benz and Zeekr publish no public RSS, so the config searches their newsroom domains through Google News. Top Gear works the same way.
+**Newsrooms without a working feed.** The BMW and Audi newsroom feeds work directly. Mercedes-Benz, Porsche, Zeekr, Polestar and Volvo Cars either have no public RSS or block servers, so the config searches their newsroom domains through Google News. Top Gear works the same way. Those stories come without thumbnails, so they show the brand-colored block instead.
 
 ## How labels work
 

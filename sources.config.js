@@ -123,15 +123,18 @@ export const sources = [
   { id: 'mercedes-media', name: 'Mercedes-Benz Group Media', type: 'official', brands: ['mercedes'], via: 'Google News',
     // No public RSS feed, so this searches Google News for the newsroom domains.
     url: googleNews('site:group.mercedes-benz.com OR site:media.mbusa.com', '14d') },
-  { id: 'porsche-newsroom', name: 'Porsche Newsroom', type: 'official', brands: ['porsche'], trustBrand: true,
-    url: 'https://newsroom.porsche.com/rss/en/' },
+  { id: 'porsche-newsroom', name: 'Porsche Newsroom', type: 'official', brands: ['porsche'], trustBrand: true, via: 'Google News',
+    // The old RSS address returns 404, so this searches the newsroom through Google News.
+    url: googleNews('site:newsroom.porsche.com', '14d') },
   { id: 'zeekr-official', name: 'Zeekr Newsroom', type: 'official', brands: ['zeekr'], trustBrand: true, via: 'Google News',
     url: googleNews('site:zeekrgroup.com OR site:zeekrlife.com OR site:zeekr.eu', '14d') },
-  { id: 'polestar-media', name: 'Polestar Media Newsroom', type: 'official', brands: ['polestar'], trustBrand: true,
-    // Same newsroom platform as Volvo Cars.
-    url: 'https://media.polestar.com/global/en/rss/pressreleases/feed.rss' },
-  { id: 'volvo-media', name: 'Volvo Cars Global Newsroom', type: 'official', brands: ['volvo'], trustBrand: true,
-    url: 'https://www.media.volvocars.com/global/en-gb/rss/pressreleases/feed.rss' },
+  { id: 'polestar-media', name: 'Polestar Media Newsroom', type: 'official', brands: ['polestar'], trustBrand: true, via: 'Google News',
+    // No public RSS feed, so this searches the newsroom through Google News.
+    url: googleNews('site:media.polestar.com OR site:polestar.com', '14d') },
+  { id: 'volvo-media', name: 'Volvo Cars Global Newsroom', type: 'official', brands: ['volvo'], trustBrand: true, via: 'Google News',
+    // The direct feed (media.volvocars.com/global/en-gb/rss/pressreleases/feed.rss) blocks servers
+    // with HTTP 503, so this searches the newsroom through Google News.
+    url: googleNews('site:media.volvocars.com OR site:volvocars.com', '14d') },
 
   // 2) News outlets
   { id: 'electrek', name: 'Electrek', type: 'outlet', url: 'https://electrek.co/feed/' },
